@@ -84,6 +84,10 @@ public class ConsoleService {
         scanner.nextLine();
     }
 
+    public void border(){
+        System.out.println("--------------------------");
+    }
+
     public void printErrorMessage() {
         System.out.println("An error occurred. Check the log for details.");
     }

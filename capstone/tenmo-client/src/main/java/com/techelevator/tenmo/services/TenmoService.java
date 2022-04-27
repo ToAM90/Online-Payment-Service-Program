@@ -1,6 +1,8 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -94,6 +96,34 @@ public class TenmoService {
         System.out.println("Something went wrong");
     }
         return account;
+    }
+
+    public User[] getAllUsers(){
+        User[] listOfUsers = null;
+        try {
+            listOfUsers = restTemplate.exchange(
+                    API_BASE_URL + "users",
+                    HttpMethod.GET,
+                    makeAuthEntity(),
+                    User[].class).getBody();
+        }catch(RestClientResponseException | ResourceAccessException e){
+            System.out.println("Something went wrong");
+        }
+        return listOfUsers;
+    }
+
+    public Transfer[] getAllTransfers(){
+        Transfer[] listOfTransfers = null;
+        try {
+            listOfTransfers = restTemplate.exchange(
+                    API_BASE_URL + "transfers",
+                    HttpMethod.GET,
+                    makeAuthEntity(),
+                    Transfer[].class).getBody();
+        }catch(RestClientResponseException | ResourceAccessException e){
+            System.out.println("Something went wrong");
+        }
+        return listOfTransfers;
     }
 
 

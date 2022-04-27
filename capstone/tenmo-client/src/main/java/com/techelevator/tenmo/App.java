@@ -1,11 +1,12 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TenmoService;
+
+import java.math.BigDecimal;
+import java.util.Scanner;
 
 
 public class App {
@@ -102,7 +103,14 @@ public class App {
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+        Transfer[]  listOfTransfers = tenmoService.getAllTransfers();
+        consoleService.border();
+        System.out.println("Transfer");
+        System.out.println("ID \t From/To \t\t Amount");
+        consoleService.border();
+        for (Transfer transfer : listOfTransfers){
+            System.out.print(transfer.getTransferId());
+        }
 		
 	}
 
@@ -112,13 +120,26 @@ public class App {
 	}
 
 	private void sendBucks() {
-        Account[] listAccounts = tenmoService.getAllAccounts();
-        for(Account account : listAccounts){
-            System.out.println(account.getUserId());
+        boolean running = true;
+        while(running){
+        System.out.println("Users ID\t" + "Name");
+        consoleService.border();
+        User[] listUsers = tenmoService.getAllUsers();
+        for(User user : listUsers){
+            System.out.println(user.getId() + "\t\t" + user.getUsername());
         }
-		// TODO Auto-generated method stub
-		
-	}
+        consoleService.border();
+
+        int id = consoleService.promptForInt("Enter the ID of user you are sending to (0 to cancel): ");
+        if (id == 0){
+            running = false;
+        } else {
+            BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:");
+
+        }
+
+
+	}}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub

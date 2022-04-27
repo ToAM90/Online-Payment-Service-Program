@@ -5,6 +5,8 @@ import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.TransferDAO;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +28,10 @@ public class AppController {
     @Autowired
     UserDao userDao;
 
+    @Autowired
     TransferDAO transferDAO;
 
-    @RequestMapping(path="/account", method = RequestMethod.GET)
+    @RequestMapping(path="account", method = RequestMethod.GET)
     public List<Account> listAccounts(){return accountDao.getAllAccounts();
     }
 
@@ -40,9 +43,27 @@ public class AppController {
         return balance;
     }
 
-    @RequestMapping(path="/user/{id}", method = RequestMethod.GET)
+    @RequestMapping(path="user/{id}", method = RequestMethod.GET)
     public Account getAccountByUserId(@PathVariable long id){return accountDao.getAnAccountByUserId(id);
     }
+
+    @RequestMapping(path="users", method = RequestMethod.GET)
+    public List<User>getAllUsers(){
+        return userDao.findAll();
+    }
+
+    @RequestMapping(path="transfers", method = RequestMethod.GET)
+    public List<Transfer> listTransfers(Principal principal){
+        String username = principal.getName();
+        int userID = userDao.findIdByUsername(username);
+        Account account = accountDao.getAnAccountByUserId(userID);
+        long accountId = account.getAccountId();
+        List<Transfer> transferList = transferDAO.getAllTransfers(accountId);
+        return  transferList;
+
+    }
+
+
 
 
 }

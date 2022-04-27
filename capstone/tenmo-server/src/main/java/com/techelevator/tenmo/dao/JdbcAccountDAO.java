@@ -57,5 +57,32 @@ public class JdbcAccountDAO implements AccountDao {
         return account;
     }
 
+    @Override
+    public boolean addBalance(BigDecimal amount, long id) {
+        Account account = getAnAccountByUserId(id);
+        BigDecimal newBalance = account.getBalance().add(amount);
+        String sql = "UPDATE account SET balance = ? WHERE user_id = ?";
+        jdbcTemplate.queryForObject(sql, BigDecimal.class, newBalance, id);
 
+        return true;
+    }
+
+    @Override
+    public boolean subtractBalance(BigDecimal amount, long id) {
+        Account account = getAnAccountByUserId(id);
+        int res = account.getBalance().compareTo(amount);
+
+        if ( res == 1 || res == 0){
+            BigDecimal newBalance = account.getBalance().subtract(amount);
+            String sql = "UPDATE account SET balance = ? WHERE user_id = ?";
+            jdbcTemplate.update(sql, newBalance, id);
+
+            return true;
+        } else {
+            return false;
+
+        }
+
+
+    }
 }
