@@ -1,9 +1,11 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
@@ -25,7 +27,14 @@ public class TenmoService {
     /**
      * Creates a new HttpEntity with the `Authorization: Bearer:` header and a reservation request body
      */
+    private HttpEntity <Account> makeAccountEntity(Account account){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(this.authToken);
 
+        HttpEntity<Account> entity = new HttpEntity<>(account, headers);
+
+        return entity;
+    }
 
     /**
      * Returns an HttpEntity with the `Authorization: Bearer:` header
@@ -56,17 +65,35 @@ public class TenmoService {
         return listOfAccounts;
     }
 
-    public BigDecimal getAccountBalance(long id){
+    public BigDecimal getAccountBalance(){
+        BigDecimal balance = new BigDecimal(0);
 
-        BigDecimal balance = null;
        try{
-           balance = restTemplate.exchange(API_BASE_URL + "balance", HttpMethod.GET,
+         
+           balance = restTemplate.exchange(
+                   API_BASE_URL + "balance",
+                   HttpMethod.GET,
                    makeAuthEntity(),
                    BigDecimal.class).getBody();
+
        } catch(RestClientResponseException | ResourceAccessException e){
-           System.out.println("Man, I hope this method works");
+           BasicLogger.log(e.getMessage());
        }
-        return balance;
+       return balance;
+    }
+
+    public Account getAccountById(long id){
+        Account account = null;
+        try {
+            account = restTemplate.exchange(API_BASE_URL + "user?=" + id,
+                    HttpMethod.GET,
+                    makeAuthEntity(),
+                    Account.class).getBody();
+
+        }catch(RestClientResponseException | ResourceAccessException e){
+        System.out.println("Something went wrong");
+    }
+        return account;
     }
 
 

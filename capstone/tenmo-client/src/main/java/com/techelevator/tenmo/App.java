@@ -1,14 +1,12 @@
 package com.techelevator.tenmo;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TenmoService;
-import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
-import java.util.Scanner;
 
 public class App {
 
@@ -18,7 +16,7 @@ public class App {
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
-    private TenmoService tenmoService;
+    private TenmoService tenmoService = new TenmoService();
 
 
     public static void main(String[] args) {
@@ -33,6 +31,7 @@ public class App {
             mainMenu();
         }
     }
+
     private void loginMenu() {
         int menuSelection = -1;
         while (menuSelection != 0 && currentUser == null) {
@@ -62,9 +61,16 @@ public class App {
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
         currentUser = authenticationService.login(credentials);
+
+
         if (currentUser == null) {
             consoleService.printErrorMessage();
         }
+
+        // set token in Service
+        tenmoService.setAuthToken(currentUser.getToken());
+
+
     }
 
     private void mainMenu() {
@@ -92,14 +98,7 @@ public class App {
     }
 
 	private void viewCurrentBalance() {
-        BigDecimal balance;
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter your account number:");
-        long id = Long.parseLong(scanner.nextLine());
-
-        balance = tenmoService.getAccountBalance(id);
-        System.out.println(balance);
-
+       System.out.println("Your current balance is: $" + tenmoService.getAccountBalance());
 	}
 
 	private void viewTransferHistory() {
@@ -113,6 +112,10 @@ public class App {
 	}
 
 	private void sendBucks() {
+        Account[] listAccounts = tenmoService.getAllAccounts();
+        for(Account account : listAccounts){
+            System.out.println(account.getUserId());
+        }
 		// TODO Auto-generated method stub
 		
 	}
