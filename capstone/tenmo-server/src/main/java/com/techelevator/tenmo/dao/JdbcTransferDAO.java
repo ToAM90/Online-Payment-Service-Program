@@ -30,9 +30,9 @@ public class JdbcTransferDAO implements TransferDAO {
 
 
     @Override
-    public List<Transfer> getAllTransfers(long accountId) {
+    public List<Transfer> getAllApprovedTransfers(long accountId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = joinTemplate + "WHERE account_from = ? OR account_to = ?";
+        String sql = joinTemplate + "WHERE (account_from = ? OR account_to = ?) AND t.transfer_status_id != 3";
         SqlRowSet results = this.jdbcTemplate.queryForRowSet(sql, accountId, accountId);
         while (results.next()) {
             transfers.add(mapRowToTransfer(results));
@@ -65,6 +65,8 @@ public class JdbcTransferDAO implements TransferDAO {
                 if (accountDao.subtractBalance(amount, userFrom)) {
                     accountDao.addBalance(amount, userTo);
                     newTransferId = jdbcTemplate.queryForObject(sql, Long.class, accountFrom.getAccountId(), accountTo.getAccountId(), amount, 2, 2);
+                } else {
+                    newTransferId = jdbcTemplate.queryForObject(sql, Long.class, accountFrom.getAccountId(), accountTo.getAccountId(), amount, 3, 2);
                 }
             } catch (DataAccessException e) {
                 System.out.println("Error while making transfer");

@@ -6,7 +6,6 @@ import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TenmoService;
 
 import java.math.BigDecimal;
-import java.util.Scanner;
 
 
 public class App {
@@ -104,50 +103,84 @@ public class App {
 
     private void viewTransferHistory() {
         boolean running = true;
-        while (running){
-        Transfer[] listOfTransfers = tenmoService.getAllTransfers();
-        consoleService.border();
-        System.out.println("Transfer");
-        System.out.println("ID \t\tFrom/To \tAmount");
-        consoleService.border();
-        long currentAccountId = tenmoService.getAccountById(currentUser.getUser().getId()).getAccountId();
-        for (Transfer transfer : listOfTransfers) {
-            String usernameTo = tenmoService.username(transfer.getAccountTo());
-            String usernameFrom = tenmoService.username(transfer.getAccountFrom());
-            if (transfer.getAccountFrom() == currentAccountId) {
-                System.out.println(transfer.getTransferId() + "\tTo: " + usernameTo + "\t" + transfer.getAmount());
-            } else if (transfer.getAccountTo() == currentAccountId) {
-                System.out.println(transfer.getTransferId() + "\tFrom: " + usernameFrom + "\t" + transfer.getAmount());
+        while (running) {
+            Transfer[] listOfTransfers = tenmoService.getAllTransfers();
+            consoleService.border();
+            System.out.println("Transfer");
+            System.out.println("ID \t\tFrom/To \tAmount");
+            consoleService.border();
+            long currentAccountId = tenmoService.getAccountById(currentUser.getUser().getId()).getAccountId();
+            for (Transfer transfer : listOfTransfers) {
+                String usernameTo = tenmoService.username(transfer.getAccountTo());
+                String usernameFrom = tenmoService.username(transfer.getAccountFrom());
+                if (transfer.getAccountFrom() == currentAccountId) {
+                    System.out.println(transfer.getTransferId() + "\tTo: " + usernameTo + "\t" + transfer.getAmount());
+                } else if (transfer.getAccountTo() == currentAccountId) {
+                    System.out.println(transfer.getTransferId() + "\tFrom: " + usernameFrom + "\t" + transfer.getAmount());
+                }
+
+            }
+            consoleService.border();
+            int input = consoleService.promptForInt("\nPlease enter transfer ID to view details (0 to cancel): ");
+            if (input == 0) {
+                running = false;
+            } else {
+                Transfer transfer = tenmoService.getTransferDetails(input);
+                consoleService.border();
+                System.out.println("Transfer Details");
+                consoleService.border();
+                System.out.println("ID:" + transfer.getTransferId());
+                System.out.println("From: " + tenmoService.username(transfer.getAccountFrom()));
+                System.out.println("To: " + tenmoService.username(transfer.getAccountTo()));
+                System.out.println("Type: " + transfer.getTransferTypeDesc());
+                System.out.println("Status: " + transfer.getTransferStatusDesc());
+                System.out.println("Amount: $" + transfer.getAmount());
+                consoleService.border();
+
+                consoleService.pause();
+
             }
 
         }
-        int input = consoleService.promptForInt("Please enter transfer ID to view details (0 to cancel): ");
-        if(input == 0){
-            running = false;
-        } else {
-            Transfer transfer = tenmoService.getTransferDetails(input);
-            consoleService.border();
-            System.out.println("Transfer Details");
-            consoleService.border();
-            System.out.println("ID:" + transfer.getTransferId());
-            System.out.println("From: " + tenmoService.username(transfer.getAccountFrom()));
-            System.out.println("To: " + tenmoService.username(transfer.getAccountTo()));
-            System.out.println("Type: " + transfer.getTransferTypeDesc());
-            System.out.println("Status: " + transfer.getTransferStatusDesc());
-            System.out.println("Amount: $" + transfer.getAmount());
-            consoleService.border();
-
-            consoleService.pause();
-
-        }
-
-    }
     }
 
     private void viewPendingRequests() {
-        // TODO Auto-generated method stub
+        boolean running = true;
+        while (running) {
+            consoleService.border();
+            System.out.println("Pending Transfers");
+            System.out.println("ID \t\tTo \tAmount");
+            consoleService.border();
 
+            Transfer pendingTransfers = null;
+           // for (Transfer transfer : pendingTransfers) {
+            // FOR EACH LOOP TO ITERATE AND PRINT OUT PENDING TRANSFERS
+           // }
+            consoleService.border();
+
+            int input = consoleService.promptForInt("Please enter transfer ID to approve/reject (0 to cancel): ");
+
+            if (input == 0) {
+                running = false;
+            } else {
+                viewPendingOptions();
+            }
+        }
     }
+
+    private void viewPendingOptions() {
+        boolean running = true;
+        while (running) {
+            consoleService.printPendingMenu();
+            int input = consoleService.promptForInt("Please choose an option: ");
+            if (input == 0) {
+                running = false;
+            } else {
+                // APPROVE OR REJECT TRANSFER METHOD
+            }
+        }
+    }
+
 
     private void sendBucks() {
         boolean running = true;
@@ -165,7 +198,7 @@ public class App {
             if (id == 0) {
                 running = false;
             } else {
-                BigDecimal amount = consoleService.promptForBigDecimal("Enter amount:");
+                BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
                 transfer = tenmoService.makeTransfer(id, amount);
                 System.out.println(transfer);
                 running = false;
@@ -174,8 +207,27 @@ public class App {
     }
 
     private void requestBucks() {
-        // TODO Auto-generated method stub
+        boolean running = true;
+        Transfer transfer = null;
+        while (running) {
+            System.out.println("Users ID\t" + "Name");
+            consoleService.border();
+            User[] listUsers = tenmoService.getAllUsers();
+            for (User user : listUsers) {
+                System.out.println(user.getId() + "\t\t" + user.getUsername());
+            }
+            consoleService.border();
 
+            int id = consoleService.promptForInt("Enter the ID of user you are requesting from (0 to cancel): ");
+            if (id == 0) {
+                running = false;
+            } else {
+                BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
+                //  PENDING METHOD
+                //  System.out.println(transfer);
+                running = false;
+            }
+        }
     }
 
 }

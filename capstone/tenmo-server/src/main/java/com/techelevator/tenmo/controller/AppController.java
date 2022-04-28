@@ -58,7 +58,7 @@ public class AppController {
         long userID = userDao.findIdByUsername(username);
         Account account = accountDao.getAnAccountByUserId(userID);
         long accountId = account.getAccountId();
-        List<Transfer> transferList = transferDAO.getAllTransfers(accountId);
+        List<Transfer> transferList = transferDAO.getAllApprovedTransfers(accountId);
         return  transferList;
 
     }
