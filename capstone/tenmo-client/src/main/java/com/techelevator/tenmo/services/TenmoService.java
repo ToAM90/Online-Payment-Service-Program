@@ -2,6 +2,7 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDTO;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.util.BasicLogger;
 import org.springframework.http.HttpEntity;
@@ -29,11 +30,11 @@ public class TenmoService {
     /**
      * Creates a new HttpEntity with the `Authorization: Bearer:` header and a reservation request body
      */
-    private HttpEntity <Account> makeAccountEntity(Account account){
+    private HttpEntity <TransferDTO> makeTransferEntity(TransferDTO transferDTO){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(this.authToken);
 
-        HttpEntity<Account> entity = new HttpEntity<>(account, headers);
+        HttpEntity<TransferDTO> entity = new HttpEntity<>(transferDTO, headers);
 
         return entity;
     }
@@ -62,7 +63,7 @@ public class TenmoService {
                     makeAuthEntity(),
                     Account[].class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e){
-            System.out.println("Like zoinks scoob, something went wrong... Rikes Raggy Rehehehe");
+            System.out.println("Something went wrong getting all accounts.");
         }
         return listOfAccounts;
     }
@@ -93,7 +94,7 @@ public class TenmoService {
                     Account.class).getBody();
 
         }catch(RestClientResponseException | ResourceAccessException e){
-        System.out.println("Something went wrong");
+        System.out.println("Something went wrong getting the account by userId");
     }
         return account;
     }
@@ -107,7 +108,7 @@ public class TenmoService {
                     makeAuthEntity(),
                     User[].class).getBody();
         }catch(RestClientResponseException | ResourceAccessException e){
-            System.out.println("Something went wrong");
+            System.out.println("Something went wrong getting all users");
         }
         return listOfUsers;
     }
@@ -121,11 +122,21 @@ public class TenmoService {
                     makeAuthEntity(),
                     Transfer[].class).getBody();
         }catch(RestClientResponseException | ResourceAccessException e){
-            System.out.println("Something went wrong");
+            System.out.println("Something went wrong getting all transfers");
         }
         return listOfTransfers;
     }
 
+    public Long makeTransfer(long userToId, BigDecimal amount){
+        TransferDTO transferDTO = new TransferDTO(userToId, amount);
+        long transferId = 0;
+        try{
+            transferId = restTemplate.exchange(API_BASE_URL + "transfers/" + userToId, HttpMethod.POST, makeTransferEntity(transferDTO), Long.class).getBody();
+        } catch (RestClientResponseException | ResourceAccessException e){
+            System.out.println("Something went wrong making a transfer");
+        }
+        return transferId;
 
+    }
 
 }

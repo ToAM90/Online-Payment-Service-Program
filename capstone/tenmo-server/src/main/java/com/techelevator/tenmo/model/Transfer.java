@@ -5,9 +5,7 @@ import java.math.BigDecimal;
 public class Transfer {
     // properties
     private long transferId;
-    private long transferTypeId;
     private String transferTypeDesc;
-    private long transferStatusId;
     private String transferStatusDesc;
     private long accountFrom;
     private long accountTo;
@@ -22,22 +20,6 @@ public class Transfer {
 
     public void setTransferId(long transferId) {
         this.transferId = transferId;
-    }
-
-    public long getTransferTypeId() {
-        return transferTypeId;
-    }
-
-    public void setTransferTypeId(long transferTypeId) {
-        this.transferTypeId = transferTypeId;
-    }
-
-    public long getTransferStatusId() {
-        return transferStatusId;
-    }
-
-    public void setTransferStatusId(long transferStatusId) {
-        this.transferStatusId = transferStatusId;
     }
 
     public long getAccountFrom() {

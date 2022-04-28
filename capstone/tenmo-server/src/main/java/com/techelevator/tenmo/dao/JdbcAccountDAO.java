@@ -58,13 +58,12 @@ public class JdbcAccountDAO implements AccountDao {
     }
 
     @Override
-    public boolean addBalance(BigDecimal amount, long userId) {
+    public void addBalance(BigDecimal amount, long userId) {
         Account account = getAnAccountByUserId(userId);
         BigDecimal newBalance = account.getBalance().add(amount);
         String sql = "UPDATE account SET balance = ? WHERE user_id = ?";
         jdbcTemplate.queryForObject(sql, BigDecimal.class, newBalance, userId);
 
-        return true;
     }
 
     @Override
@@ -80,7 +79,6 @@ public class JdbcAccountDAO implements AccountDao {
             return true;
         } else {
             return false;
-
         }
 
 

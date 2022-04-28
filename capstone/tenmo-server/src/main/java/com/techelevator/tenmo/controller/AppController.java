@@ -6,13 +6,11 @@ import com.techelevator.tenmo.dao.TransferDAO;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferDTO;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.security.Principal;
@@ -63,6 +61,19 @@ public class AppController {
         List<Transfer> transferList = transferDAO.getAllTransfers(accountId);
         return  transferList;
 
+    }
+
+    @RequestMapping(path="transfers", method = RequestMethod.POST)
+    public Transfer startTransfer (Principal principal, @RequestBody TransferDTO transferDTO) {
+
+        System.out.println(transferDTO.getAccountToId());
+        System.out.println(transferDTO.getAmount());
+        String username = principal.getName();
+        long userID = userDao.findIdByUsername(username);
+        Transfer transfer = transferDAO.newTransfer(userID, transferDTO.getAccountToId(),transferDTO.getAmount() );
+
+
+        return transfer;
     }
 
 

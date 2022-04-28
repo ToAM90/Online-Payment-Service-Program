@@ -14,7 +14,7 @@ public interface AccountDao {
 
     Account getAnAccountByUserId(long userId);
 
-    boolean addBalance(BigDecimal amount, long accountId);
+    void addBalance(BigDecimal amount, long accountId);
 
     boolean subtractBalance(BigDecimal amount, long accountId);
 
