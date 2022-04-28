@@ -23,6 +23,17 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
+    public long findAccountByUser(long userId){
+        String sql = "SELECT account_id FROM tenmo_user WHERE user_id = ?";
+        Long accountId = jdbcTemplate.queryForObject(sql, Long.class, userId);
+        if (accountId != null){
+            return accountId;
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
     public int findIdByUsername(String username) {
         String sql = "SELECT user_id FROM tenmo_user WHERE username ILIKE ?;";
         Integer id = jdbcTemplate.queryForObject(sql, Integer.class, username);
@@ -34,10 +45,10 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<User> findAll(long userId) {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT user_id, username, password_hash FROM tenmo_user;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        String sql = "SELECT user_id, username, password_hash FROM tenmo_user WHERE NOT user_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
         while(results.next()) {
             User user = mapRowToUser(results);
             users.add(user);

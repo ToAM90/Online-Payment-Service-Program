@@ -108,8 +108,14 @@ public class App {
         System.out.println("Transfer");
         System.out.println("ID \t From/To \t\t Amount");
         consoleService.border();
+        long currentAccountId = tenmoService.getAccountById(currentUser.getUser().getId()).getAccountId();
         for (Transfer transfer : listOfTransfers){
-            System.out.print(transfer.getTransferId());
+            if(transfer.getAccountFrom() == currentAccountId){
+                System.out.println(transfer.getTransferId() + "To: " + transfer.getAccountTo() + transfer.getAmount());
+            } else if (transfer.getAccountTo() == currentAccountId){
+                System.out.println(transfer.getTransferId() + "From: " + transfer.getAccountFrom() + transfer.getAmount());
+            }
+
         }
 		
 	}

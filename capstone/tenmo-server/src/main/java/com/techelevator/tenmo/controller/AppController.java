@@ -48,14 +48,16 @@ public class AppController {
     }
 
     @RequestMapping(path="users", method = RequestMethod.GET)
-    public List<User>getAllUsers(){
-        return userDao.findAll();
+    public List<User>getAllUsers(Principal principal){
+        String username = principal.getName();
+        long userID = userDao.findIdByUsername(username);
+        return userDao.findAll(userID);
     }
 
     @RequestMapping(path="transfers", method = RequestMethod.GET)
     public List<Transfer> listTransfers(Principal principal){
         String username = principal.getName();
-        int userID = userDao.findIdByUsername(username);
+        long userID = userDao.findIdByUsername(username);
         Account account = accountDao.getAnAccountByUserId(userID);
         long accountId = account.getAccountId();
         List<Transfer> transferList = transferDAO.getAllTransfers(accountId);

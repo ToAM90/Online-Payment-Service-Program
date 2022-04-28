@@ -30,8 +30,8 @@ public class JdbcTransferDAO implements TransferDAO{
     @Override
     public List<Transfer> getAllTransfers(long accountId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = joinTemplate + "WHERE account_from = ?";
-        SqlRowSet results = this.jdbcTemplate.queryForRowSet(sql, accountId);
+        String sql = joinTemplate + "WHERE account_from = ? OR account_to = ?";
+        SqlRowSet results = this.jdbcTemplate.queryForRowSet(sql, accountId, accountId);
         while  (results.next()){
             transfers.add(mapRowToTransfer(results));
         }
@@ -56,6 +56,7 @@ public class JdbcTransferDAO implements TransferDAO{
         String sql = "INSERT INTO transfer (account_from, account_to, amount) Values (?, ?, ?) RETURNING transfer_id";
         long newTransferId = 0;
 
+        
         if(accountFrom != accountTo){
         try {
         newTransferId = jdbcTemplate.queryForObject(sql, Long.class, accountFrom, accountTo, amount);
