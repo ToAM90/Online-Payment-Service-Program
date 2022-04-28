@@ -63,6 +63,11 @@ public class AppController {
 
     }
 
+    @RequestMapping(path="transfers/{transferId}", method = RequestMethod.GET)
+    public Transfer transferDetails (@PathVariable long transferId){
+        return transferDAO.getTransferById(transferId);
+    }
+
     @RequestMapping(path="transfers", method = RequestMethod.POST)
     public Transfer startTransfer (Principal principal, @RequestBody TransferDTO transferDTO) {
 
@@ -74,6 +79,11 @@ public class AppController {
 
 
         return transfer;
+    }
+
+    @RequestMapping(path="username/{accountId}", method = RequestMethod.GET)
+    public String username (@PathVariable long accountId){
+        return userDao.findUserByAccountID(accountId);
     }
 
 

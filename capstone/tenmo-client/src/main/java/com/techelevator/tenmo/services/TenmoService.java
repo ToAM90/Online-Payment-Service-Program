@@ -88,7 +88,7 @@ public class TenmoService {
     public Account getAccountById(long id){
         Account account = null;
         try {
-            account = restTemplate.exchange(API_BASE_URL + "user?=" + id,
+            account = restTemplate.exchange(API_BASE_URL + "user/" + id,
                     HttpMethod.GET,
                     makeAuthEntity(),
                     Account.class).getBody();
@@ -127,16 +127,41 @@ public class TenmoService {
         return listOfTransfers;
     }
 
-    public Long makeTransfer(long userToId, BigDecimal amount){
+    public Transfer getTransferDetails(long accountId){
+        Transfer transfer = null;
+        try {
+            transfer = restTemplate.exchange(
+                    API_BASE_URL + "transfers/" + accountId,
+                    HttpMethod.GET,
+                    makeAuthEntity(),
+                    Transfer.class).getBody();
+        }catch(RestClientResponseException | ResourceAccessException e){
+            System.out.println("Something went wrong getting all transfers");
+        }
+        return transfer;
+    }
+
+        public Transfer makeTransfer(long userToId, BigDecimal amount){
         TransferDTO transferDTO = new TransferDTO(userToId, amount);
-        long transferId = 0;
+        Transfer transfer = null;
         try{
-            transferId = restTemplate.exchange(API_BASE_URL + "transfers/" + userToId, HttpMethod.POST, makeTransferEntity(transferDTO), Long.class).getBody();
+            transfer = restTemplate.exchange(API_BASE_URL + "transfers", HttpMethod.POST, makeTransferEntity(transferDTO), Transfer.class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e){
             System.out.println("Something went wrong making a transfer");
         }
-        return transferId;
+        return transfer;
 
+    }
+
+    public String username (long accountId){
+        String username = null;
+        try {
+            username = restTemplate.exchange(API_BASE_URL + "username/" + accountId, HttpMethod.GET, makeAuthEntity(), String.class).getBody();
+
+        } catch (RestClientResponseException | ResourceAccessException e){
+        System.out.println("Something went wrong getting username");
+    }
+        return username;
     }
 
 }

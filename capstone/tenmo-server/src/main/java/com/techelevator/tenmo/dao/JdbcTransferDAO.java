@@ -18,9 +18,9 @@ public class JdbcTransferDAO implements TransferDAO {
     @Autowired
     private AccountDao accountDao;
 
-    private String joinTemplate = "SELECT * FROM transfer t " +
-            "JOIN transfer_status ts ON t.transfer_id = ts.transfer_status_id " +
-            "JOIN transfer_type tt ON t.transfer_id = tt.transfer_type_id ";
+    private String joinTemplate = "SELECT t.transfer_id, t.account_from, t.account_to, t.amount, tt.transfer_type_desc, ts.transfer_status_desc FROM transfer t " +
+            "JOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_id " +
+            "JOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_id ";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -61,32 +61,32 @@ public class JdbcTransferDAO implements TransferDAO {
         Account accountTo = accountDao.getAnAccountByUserId(userTo);
 
         if (userFrom != userTo) {
-//            try {
+            try {
                 if (accountDao.subtractBalance(amount, userFrom)) {
                     accountDao.addBalance(amount, userTo);
                     newTransferId = jdbcTemplate.queryForObject(sql, Long.class, accountFrom.getAccountId(), accountTo.getAccountId(), amount, 2, 2);
                 }
-//            } catch (DataAccessException e) {
-//                System.out.println("Error while making transfer");
-//            }
+            } catch (DataAccessException e) {
+                System.out.println("Error while making transfer");
+            }
 
         } else {
-            return null;
+            newTransferId = jdbcTemplate.queryForObject(sql, Long.class, accountFrom.getAccountId(), accountTo.getAccountId(), amount, 3, 2);
 
         }
         return getTransferById(newTransferId);
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rs) {
-        Transfer transfer = new Transfer();
-        transfer.setTransferId(rs.getLong("tt.transfer_type_id"));
-        transfer.setTransferTypeDesc(rs.getString("tt.transfer_type_desc"));
-        transfer.setTransferTypeDesc(rs.getString("ts.transfer_status_desc"));
-        transfer.setAccountFrom(rs.getLong("t.amount_from"));
-        transfer.setAccountTo(rs.getLong("t.amount_to"));
-        transfer.setAmount(rs.getBigDecimal("t.amount"));
+        Transfer t = new Transfer();
+        t.setTransferId(rs.getLong("transfer_id"));
+        t.setAccountFrom(rs.getLong("account_from"));
+        t.setAccountTo(rs.getLong("account_to"));
+        t.setAmount(rs.getBigDecimal("amount"));
+        t.setTransferTypeDesc(rs.getString("transfer_type_desc"));
+        t.setTransferStatusDesc(rs.getString("transfer_status_desc"));
 
-        return transfer;
+        return t;
 
     }
 }

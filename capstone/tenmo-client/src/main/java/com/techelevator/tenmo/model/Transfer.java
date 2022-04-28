@@ -79,4 +79,15 @@ public class Transfer {
     public void setTransferStatusDesc(String transferStatusDesc) {
         this.transferStatusDesc = transferStatusDesc;
     }
+
+
+    @Override
+    public String toString() {
+        return "\nId: " + transferId +
+                "\nType: " + transferTypeDesc + '\'' +
+                "\nStatus: " + transferStatusDesc + '\'' +
+                "\nFrom: " + accountFrom +
+                "\nTo: " + accountTo +
+                "\nAmount: $" + amount;
+    }
 }

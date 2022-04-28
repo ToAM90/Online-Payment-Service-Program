@@ -23,15 +23,22 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public long findAccountByUser(long userId){
-        String sql = "SELECT account_id FROM tenmo_user WHERE user_id = ?";
-        Long accountId = jdbcTemplate.queryForObject(sql, Long.class, userId);
-        if (accountId != null){
-            return accountId;
-        } else {
-            return -1;
-        }
+    public String findUserByAccountID(long accountId){
+        String sql = "SELECT username FROM tenmo_user JOIN account ON account.user_id = tenmo_user.user_id WHERE account_id = ?";
+        String username = jdbcTemplate.queryForObject(sql, String.class, accountId);
+        return username;
+
     }
+//    @Override
+//    public long findAccountByUser(long userId){
+//        String sql = "SELECT account_id FROM tenmo_user WHERE user_id = ?";
+//        Long accountId = jdbcTemplate.queryForObject(sql, Long.class, userId);
+//        if (accountId != null){
+//            return accountId;
+//        } else {
+//            return -1;
+//        }
+//    }
 
     @Override
     public int findIdByUsername(String username) {
