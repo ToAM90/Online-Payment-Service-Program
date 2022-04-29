@@ -9,8 +9,13 @@ public class Account {
     private BigDecimal balance;
 
 
+    public Account(){}
 
-
+    public Account(long userId, long accountId, BigDecimal balance) {
+        this.userId = userId;
+        this.accountId = accountId;
+        this.balance = balance;
+    }
 
     // Getters and setters
     public long getUserId() {

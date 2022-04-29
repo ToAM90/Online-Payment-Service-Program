@@ -21,6 +21,8 @@ public class User {
       this.activated = true;
    }
 
+
+
    public Long getId() {
       return id;
    }
@@ -60,6 +62,8 @@ public class User {
    public void setAuthorities(Set<Authority> authorities) {
       this.authorities = authorities;
    }
+
+
 
    public void setAuthorities(String authorities) {
       String[] roles = authorities.split(",");

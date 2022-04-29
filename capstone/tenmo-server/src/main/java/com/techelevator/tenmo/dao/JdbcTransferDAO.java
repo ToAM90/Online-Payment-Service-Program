@@ -8,12 +8,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class JdbcTransferDAO implements TransferDAO {
+
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private AccountDao accountDao;
@@ -22,12 +25,10 @@ public class JdbcTransferDAO implements TransferDAO {
             "JOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_id " +
             "JOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_id ";
 
-    private JdbcTemplate jdbcTemplate;
-
-    public JdbcTransferDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcTransferDAO(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.accountDao = new JdbcAccountDAO(dataSource);
     }
-
 
     @Override
     public List<Transfer> getAllApprovedTransfers(long accountId) {

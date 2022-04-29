@@ -53,21 +53,6 @@ public class TenmoService {
         return entity;
     }
 
-    public Account[] getAllAccounts(){
-
-        Account[] listOfAccounts = null;
-        try{
-            listOfAccounts = restTemplate.exchange(
-                    API_BASE_URL + "account",
-                    HttpMethod.GET,
-                    makeAuthEntity(),
-                    Account[].class).getBody();
-        } catch (RestClientResponseException | ResourceAccessException e){
-            System.out.println("Something went wrong getting all accounts.");
-        }
-        return listOfAccounts;
-    }
-
     public BigDecimal getAccountBalance(){
         BigDecimal balance = new BigDecimal(0);
 

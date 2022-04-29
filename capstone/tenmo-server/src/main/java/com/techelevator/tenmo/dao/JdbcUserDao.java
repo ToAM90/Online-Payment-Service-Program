@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +16,14 @@ import java.util.List;
 @Component
 public class JdbcUserDao implements UserDao {
 
-    private static final BigDecimal STARTING_BALANCE = new BigDecimal("1000.00");
     private JdbcTemplate jdbcTemplate;
 
-    public JdbcUserDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    private static final BigDecimal STARTING_BALANCE = new BigDecimal("1000.00");
+
+    public JdbcUserDao(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
+
 
     @Override
     public String findUserByAccountID(long accountId){
@@ -29,21 +32,11 @@ public class JdbcUserDao implements UserDao {
         return username;
 
     }
-//    @Override
-//    public long findAccountByUser(long userId){
-//        String sql = "SELECT account_id FROM tenmo_user WHERE user_id = ?";
-//        Long accountId = jdbcTemplate.queryForObject(sql, Long.class, userId);
-//        if (accountId != null){
-//            return accountId;
-//        } else {
-//            return -1;
-//        }
-//    }
 
     @Override
-    public int findIdByUsername(String username) {
+    public long findIdByUsername(String username) {
         String sql = "SELECT user_id FROM tenmo_user WHERE username ILIKE ?;";
-        Integer id = jdbcTemplate.queryForObject(sql, Integer.class, username);
+        Long id = jdbcTemplate.queryForObject(sql, Long.class, username);
         if (id != null) {
             return id;
         } else {

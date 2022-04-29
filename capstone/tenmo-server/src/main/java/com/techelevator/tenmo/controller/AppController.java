@@ -9,6 +9,7 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.TransferDTO;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,14 +30,10 @@ public class AppController {
     @Autowired
     TransferDAO transferDAO;
 
-    @RequestMapping(path="account", method = RequestMethod.GET)
-    public List<Account> listAccounts(){return accountDao.getAllAccounts();
-    }
-
     @RequestMapping(path="balance", method = RequestMethod.GET)
     public BigDecimal getAccountBalance(Principal principal){
         String username = principal.getName();
-        int userId = userDao.findIdByUsername(username);
+        long userId = userDao.findIdByUsername(username);
         BigDecimal balance = accountDao.getBalance(userId);
         return balance;
     }
@@ -68,6 +65,8 @@ public class AppController {
         return transferDAO.getTransferById(transferId);
     }
 
+
+    @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path="transfers", method = RequestMethod.POST)
     public Transfer startTransfer (Principal principal, @RequestBody TransferDTO transferDTO) {
 

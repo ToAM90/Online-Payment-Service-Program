@@ -9,13 +9,17 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 @Component
 public class JdbcAccountDAO implements AccountDao {
     private JdbcTemplate jdbcTemplate;
-    public JdbcAccountDAO(DataSource ds){this.jdbcTemplate = new JdbcTemplate(ds);}
+
+    public JdbcAccountDAO(DataSource ds) {
+        this.jdbcTemplate = new JdbcTemplate(ds);
+    }
 
     // SqlRowSet Object Mapper :)
-    private Account accountObjectMapper(SqlRowSet results){
+    private Account accountObjectMapper(SqlRowSet results) {
         Account account = new Account();
         account.setAccountId(results.getLong("account_id"));
         account.setBalance(results.getBigDecimal("balance"));
@@ -26,22 +30,12 @@ public class JdbcAccountDAO implements AccountDao {
 
     // override methods
 
-    @Override
-    public List<Account> getAllAccounts() {
-       String sql = "SELECT * FROM account";
-        SqlRowSet results = this.jdbcTemplate.queryForRowSet(sql);
-        List<Account> accounts = new ArrayList<>();
-        while (results.next()){
-            accounts.add(accountObjectMapper(results));
-        }
-        return accounts;
-    }
 
     @Override
-    public BigDecimal getBalance(long id) {
+    public BigDecimal getBalance(long userId) {
 
         String sql = "SELECT balance FROM account WHERE user_id = ?;";
-       return jdbcTemplate.queryForObject(sql,BigDecimal.class, id);
+        return jdbcTemplate.queryForObject(sql, BigDecimal.class, userId);
     }
 
     @Override
@@ -50,7 +44,7 @@ public class JdbcAccountDAO implements AccountDao {
         SqlRowSet results = this.jdbcTemplate.queryForRowSet(sql, userId);
 
         Account account = null;
-        if(results.next()){
+        if (results.next()) {
             account = accountObjectMapper(results);
         }
 
@@ -70,7 +64,7 @@ public class JdbcAccountDAO implements AccountDao {
         Account account = getAnAccountByUserId(userId);
         int res = account.getBalance().compareTo(amount);
 
-        if ( res == 1 || res == 0){
+        if (res == 1 || res == 0) {
             String sql = "UPDATE account SET balance = balance - ? WHERE user_id = ?";
             jdbcTemplate.update(sql, amount, userId);
 
