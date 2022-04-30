@@ -78,7 +78,7 @@ public class TenmoService {
                     Account.class).getBody();
 
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong getting the account by userId");
+            System.out.println("Error in retrieving account");
         }
         return account;
     }
@@ -91,7 +91,7 @@ public class TenmoService {
                     makeAuthEntity(),
                     Long.class).getBody();
         }catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong with retrieving userId");
+            System.out.println("Error in retrieving userID");
         }
         return userId;
     }
@@ -105,7 +105,7 @@ public class TenmoService {
                     makeAuthEntity(),
                     User[].class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong getting all users");
+            System.out.println("Error in retrieving users");
         }
         return listOfUsers;
     }
@@ -119,7 +119,7 @@ public class TenmoService {
                     makeAuthEntity(),
                     Transfer[].class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong getting all transfers");
+            System.out.println("Error in retrieving all approved transfers");
         }
         return listOfTransfers;
     }
@@ -133,7 +133,7 @@ public class TenmoService {
                     makeAuthEntity(),
                     Transfer[].class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong getting pending transfers");
+            System.out.println("Error in retrieving all pending transfers");
         }
         return listOfTransfers;
     }
@@ -147,7 +147,7 @@ public class TenmoService {
                     makeAuthEntity(),
                     Transfer.class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong getting transfer");
+            System.out.println("Error in retrieving transfer");
         }
         return transfer;
     }
@@ -158,7 +158,7 @@ public class TenmoService {
         try {
             transfer = restTemplate.exchange(API_BASE_URL + "transfers", HttpMethod.POST, makeTransferEntity(transferDTO), Transfer.class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong making a transfer");
+            System.out.println("Error in making a transfer");
         }
         return transfer;
     }
@@ -170,7 +170,7 @@ public class TenmoService {
         try {
                 transfer = restTemplate.exchange(API_BASE_URL + "requests", HttpMethod.POST, makeTransferEntity(transferDTO), Transfer.class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong making a request");
+            System.out.println("Error in making a request");
         }
         return transfer;
 
@@ -182,7 +182,7 @@ public class TenmoService {
             restTemplate.put(API_BASE_URL + "transfer/" + transferId + "/accept", makeTransferEntity(transferDTO));
             return true;
         }catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong accepting a request");
+            System.out.println("Error in accepting request");
         } return false;
     }
     public boolean rejectRequest(long transferId, long accountToId, BigDecimal amount){
@@ -192,7 +192,7 @@ public class TenmoService {
             restTemplate.put(API_BASE_URL + "transfer/" + transferId + "/reject", makeTransferEntity(transferDTO));
             return true;
         }catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong rejecting a request");
+            System.out.println("Error in rejecting request");
         } return false;
     }
 
@@ -203,7 +203,7 @@ public class TenmoService {
             username = restTemplate.exchange(API_BASE_URL + "username/" + accountId, HttpMethod.GET, makeAuthEntity(), String.class).getBody();
 
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println("Something went wrong getting username");
+            System.out.println("Error in retrieving username");
         }
         return username;
     }

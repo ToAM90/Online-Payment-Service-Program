@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public class TransferDTO {
 
-    @NotBlank(message = "Name should exist.")
+
     private long userId;
     @Positive(message = "Amount should be greater than zero.")
     private BigDecimal amount;

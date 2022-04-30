@@ -12,12 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
-@PreAuthorize("isAuthenticated()")
 @RestController
+@PreAuthorize("isAuthenticated()")
 public class AppController {
 
     @Autowired
@@ -81,7 +82,7 @@ public class AppController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path="transfers", method = RequestMethod.POST)
-    public Transfer startTransfer (Principal principal, @RequestBody TransferDTO transferDTO) {
+    public Transfer startTransfer (Principal principal, @Valid @RequestBody TransferDTO transferDTO) {
         String username = principal.getName();
         long userID = userDao.findIdByUsername(username);
         Transfer transfer = transferDAO.newTransfer(userID, transferDTO.getUserId(),transferDTO.getAmount());
@@ -91,7 +92,7 @@ public class AppController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path="requests", method = RequestMethod.POST)
-    public Transfer requestTransfer(Principal principal, @RequestBody TransferDTO transferDTO){
+    public Transfer requestTransfer(Principal principal, @Valid @RequestBody TransferDTO transferDTO){
         String username = principal.getName();
         long userId = userDao.findIdByUsername(username);
         Transfer transfer = transferDAO.newRequest(transferDTO.getUserId(), userId, transferDTO.getAmount());
@@ -100,7 +101,7 @@ public class AppController {
     }
 
     @RequestMapping(path="transfer/{transferId}/accept", method = RequestMethod.PUT)
-    public boolean acceptTransfer(Principal principal, @RequestBody TransferDTO transferDTO, @PathVariable long transferId) {
+    public boolean acceptTransfer(Principal principal, @Valid @RequestBody TransferDTO transferDTO, @PathVariable long transferId) {
         String usernameFrom = principal.getName();
         long userFromId = userDao.findIdByUsername(usernameFrom);
 
@@ -108,7 +109,7 @@ public class AppController {
     }
 
     @RequestMapping(path="transfer/{transferId}/reject", method = RequestMethod.PUT)
-    public boolean rejectTransfer(Principal principal, @RequestBody TransferDTO transferDTO, @PathVariable long transferId) {
+    public boolean rejectTransfer(Principal principal, @Valid @RequestBody TransferDTO transferDTO, @PathVariable long transferId) {
         String usernameFrom = principal.getName();
         long userFromId = userDao.findIdByUsername(usernameFrom);
 
