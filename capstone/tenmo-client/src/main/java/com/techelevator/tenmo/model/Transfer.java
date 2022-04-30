@@ -84,8 +84,8 @@ public class Transfer {
     @Override
     public String toString() {
         return "\nId: " + transferId +
-                "\nType: " + transferTypeDesc + '\'' +
-                "\nStatus: " + transferStatusDesc + '\'' +
+                "\nType: " + transferTypeDesc  +
+                "\nStatus: " + transferStatusDesc +
                 "\nFrom: " + accountFrom +
                 "\nTo: " + accountTo +
                 "\nAmount: $" + amount;

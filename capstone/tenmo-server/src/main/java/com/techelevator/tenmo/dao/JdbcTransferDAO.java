@@ -33,8 +33,19 @@ public class JdbcTransferDAO implements TransferDAO {
     @Override
     public List<Transfer> getAllApprovedTransfers(long accountId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = joinTemplate + "WHERE (account_from = ? OR account_to = ?) AND t.transfer_status_id != 3";
+        String sql = joinTemplate + "WHERE (account_from = ? OR account_to = ?) AND t.transfer_status_id = 2";
         SqlRowSet results = this.jdbcTemplate.queryForRowSet(sql, accountId, accountId);
+        while (results.next()) {
+            transfers.add(mapRowToTransfer(results));
+        }
+        return transfers;
+    }
+
+    @Override
+    public List<Transfer> getAllPendingTransfers(long accountId) {
+        List<Transfer> transfers = new ArrayList<>();
+        String sql = joinTemplate + "WHERE account_from = ? AND t.transfer_status_id = 1";
+        SqlRowSet results = this.jdbcTemplate.queryForRowSet(sql, accountId);
         while (results.next()) {
             transfers.add(mapRowToTransfer(results));
         }
@@ -79,6 +90,63 @@ public class JdbcTransferDAO implements TransferDAO {
         }
         return getTransferById(newTransferId);
     }
+
+    @Override
+    public Transfer newRequest(long userFrom, long userTo, BigDecimal amount) {
+        String sql = "INSERT INTO transfer (account_from, account_to, amount, transfer_status_id, transfer_type_id) Values (?, ?, ?, ?, ?) RETURNING transfer_id";
+        long newTransferId = 0;
+        Account accountFrom = accountDao.getAnAccountByUserId(userFrom);
+        Account accountTo = accountDao.getAnAccountByUserId(userTo);
+
+        if (userFrom != userTo) {
+            try {
+                newTransferId = jdbcTemplate.queryForObject(sql, Long.class, accountFrom.getAccountId(), accountTo.getAccountId(), amount, 1, 1);
+            } catch (DataAccessException e) {
+                System.out.println("Error while requesting transfer");
+            }
+
+        } else {
+            newTransferId = jdbcTemplate.queryForObject(sql, Long.class, accountFrom.getAccountId(), accountTo.getAccountId(), amount, 3, 1);
+
+        }
+        return getTransferById(newTransferId);
+    }
+
+    @Override
+    public boolean acceptRequest(long userFrom, long userTo, BigDecimal amount, long transferId) {
+
+        String sql = "UPDATE transfer SET transfer_status_id = ?  WHERE transfer_id = ?";
+
+        try {
+            if (accountDao.subtractBalance(amount, userFrom)) {
+                accountDao.addBalance(amount, userTo);
+                jdbcTemplate.update(sql, 2, transferId);
+                return true;
+            } else {
+                jdbcTemplate.update(sql, 3, transferId);
+            }
+        } catch (DataAccessException e) {
+            System.out.println("Error while accepting transfer");
+        }
+
+        return false;
+
+    }
+
+    @Override
+    public boolean rejectRequest(long transferId) {
+
+        String sql = "UPDATE transfer SET transfer_status_id = ?  WHERE transfer_id = ?";
+        try {
+            jdbcTemplate.update(sql, 3, transferId);
+            return true;
+        } catch (DataAccessException e) {
+            System.out.println("Error while rejecting transfer");
+        }
+
+        return false;
+    }
+
 
     private Transfer mapRowToTransfer(SqlRowSet rs) {
         Transfer t = new Transfer();

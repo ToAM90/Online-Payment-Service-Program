@@ -4,20 +4,20 @@ import java.math.BigDecimal;
 
 public class TransferDTO {
 
-    private long accountToId;
+    private long userId;
     private BigDecimal amount;
 
-    public TransferDTO(long accountToId, BigDecimal amount) {
-        this.accountToId = accountToId;
+    public TransferDTO(long userId, BigDecimal amount) {
+        this.userId = userId;
         this.amount = amount;
     }
 
-    public long getAccountToId() {
-        return accountToId;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setAccountToId(long accountToId) {
-        this.accountToId = accountToId;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public BigDecimal getAmount() {

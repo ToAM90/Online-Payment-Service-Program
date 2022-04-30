@@ -1,18 +1,22 @@
 package com.techelevator.tenmo.model;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class TransferDTO {
 
-    private long accountToId;
+    @NotBlank(message = "Name should exist.")
+    private long userId;
+    @Positive(message = "Amount should be greater than zero.")
     private BigDecimal amount;
 
-    public long getAccountToId() {
-        return accountToId;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setAccountToId(long accountToId) {
-        this.accountToId = accountToId;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public BigDecimal getAmount() {

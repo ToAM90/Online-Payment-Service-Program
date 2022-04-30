@@ -1,7 +1,6 @@
 package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDao;
-import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.TransferDAO;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Account;
@@ -38,8 +37,12 @@ public class AppController {
         return balance;
     }
 
-    @RequestMapping(path="user/{id}", method = RequestMethod.GET)
+    @RequestMapping(path="account/{id}", method = RequestMethod.GET)
     public Account getAccountByUserId(@PathVariable long id){return accountDao.getAnAccountByUserId(id);
+    }
+
+    @RequestMapping(path="user/{id}", method = RequestMethod.GET)
+    public long getUserIdByAccountId(@PathVariable long id){return userDao.findIdByAccountID(id);
     }
 
     @RequestMapping(path="users", method = RequestMethod.GET)
@@ -60,6 +63,16 @@ public class AppController {
 
     }
 
+    @RequestMapping(path="transfers/pending", method = RequestMethod.GET)
+    public List<Transfer> listPendingTransfers(Principal principal){
+        String username = principal.getName();
+        long userID = userDao.findIdByUsername(username);
+        Account account = accountDao.getAnAccountByUserId(userID);
+        long accountId = account.getAccountId();
+        List<Transfer> transferList = transferDAO.getAllPendingTransfers(accountId);
+        return  transferList;
+    }
+
     @RequestMapping(path="transfers/{transferId}", method = RequestMethod.GET)
     public Transfer transferDetails (@PathVariable long transferId){
         return transferDAO.getTransferById(transferId);
@@ -69,16 +82,39 @@ public class AppController {
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(path="transfers", method = RequestMethod.POST)
     public Transfer startTransfer (Principal principal, @RequestBody TransferDTO transferDTO) {
-
-        System.out.println(transferDTO.getAccountToId());
-        System.out.println(transferDTO.getAmount());
         String username = principal.getName();
         long userID = userDao.findIdByUsername(username);
-        Transfer transfer = transferDAO.newTransfer(userID, transferDTO.getAccountToId(),transferDTO.getAmount() );
-
+        Transfer transfer = transferDAO.newTransfer(userID, transferDTO.getUserId(),transferDTO.getAmount());
 
         return transfer;
     }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @RequestMapping(path="requests", method = RequestMethod.POST)
+    public Transfer requestTransfer(Principal principal, @RequestBody TransferDTO transferDTO){
+        String username = principal.getName();
+        long userId = userDao.findIdByUsername(username);
+        Transfer transfer = transferDAO.newRequest(transferDTO.getUserId(), userId, transferDTO.getAmount());
+
+        return transfer;
+    }
+
+    @RequestMapping(path="transfer/{transferId}/accept", method = RequestMethod.PUT)
+    public boolean acceptTransfer(Principal principal, @RequestBody TransferDTO transferDTO, @PathVariable long transferId) {
+        String usernameFrom = principal.getName();
+        long userFromId = userDao.findIdByUsername(usernameFrom);
+
+        return transferDAO.acceptRequest(userFromId, transferDTO.getUserId(), transferDTO.getAmount(), transferId);
+    }
+
+    @RequestMapping(path="transfer/{transferId}/reject", method = RequestMethod.PUT)
+    public boolean rejectTransfer(Principal principal, @RequestBody TransferDTO transferDTO, @PathVariable long transferId) {
+        String usernameFrom = principal.getName();
+        long userFromId = userDao.findIdByUsername(usernameFrom);
+
+        return transferDAO.rejectRequest(transferId);
+    }
+
 
     @RequestMapping(path="username/{accountId}", method = RequestMethod.GET)
     public String username (@PathVariable long accountId){

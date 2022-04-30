@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 import static org.junit.Assert.*;
 
 public class JdbcAccountDAOTest extends BaseDaoTests{
-    private static final Account ACCOUNT_1 = new Account(20L,1L, new BigDecimal("1000.00"));
-    private static final Account ACCOUNT_2 = new Account(21L,2L, new BigDecimal("1000.00"));
+    private static final Account ACCOUNT_1 = new Account(1L,1L, new BigDecimal("1000.00"));
+    private static final Account ACCOUNT_2 = new Account(2L,2L, new BigDecimal("1000.00"));
 
     private JdbcAccountDAO sut;
     @Before
@@ -23,20 +23,20 @@ public class JdbcAccountDAOTest extends BaseDaoTests{
 
     @Test
     public void getBalance() {
-        BigDecimal retrieveBalance = sut.getBalance(20);
+        BigDecimal retrieveBalance = sut.getBalance(2L);
         Assert.assertEquals(new BigDecimal("1000.00"), retrieveBalance);
 
     }
 
     @Test
     public void getAnAccountByUserId() {
-        Account account2 = sut.getAnAccountByUserId(21);
+        Account account2 = sut.getAnAccountByUserId(2L);
         Assert.assertNotNull(account2);
 
         assertAccountsMatch(ACCOUNT_2, account2);
 
 
-        Account account1 = sut.getAnAccountByUserId(20);
+        Account account1 = sut.getAnAccountByUserId(1L);
         Assert.assertNotNull(account1);
 
         assertAccountsMatch(ACCOUNT_1, account1);
@@ -45,12 +45,12 @@ public class JdbcAccountDAOTest extends BaseDaoTests{
 
     @Test
     public void addBalance() {
-        Account account = sut.getAnAccountByUserId(21);
+        Account account = sut.getAnAccountByUserId(2L);
         account.setBalance(new BigDecimal("1200.00"));
 
-        sut.addBalance(new BigDecimal("200.00"), 21);
+        sut.addBalance(new BigDecimal("200.00"), 2L);
 
-        Account updatedAccount = sut.getAnAccountByUserId(21);
+        Account updatedAccount = sut.getAnAccountByUserId(2L);
 
         assertAccountsMatch(account,updatedAccount);
 
@@ -58,12 +58,12 @@ public class JdbcAccountDAOTest extends BaseDaoTests{
 
     @Test
     public void subtractBalance() {
-        Account account = sut.getAnAccountByUserId(21);
+        Account account = sut.getAnAccountByUserId(2L);
         account.setBalance(new BigDecimal("800.00"));
 
-        sut.subtractBalance(new BigDecimal("200.00"), 21);
+        sut.subtractBalance(new BigDecimal("200.00"), 2L);
 
-        Account updatedAccount = sut.getAnAccountByUserId(21);
+        Account updatedAccount = sut.getAnAccountByUserId(2L);
 
         assertAccountsMatch(account,updatedAccount);
 

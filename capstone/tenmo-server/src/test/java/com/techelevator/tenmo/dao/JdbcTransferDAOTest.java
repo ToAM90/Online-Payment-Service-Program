@@ -12,9 +12,10 @@ import java.util.concurrent.TransferQueue;
 
 
 public class JdbcTransferDAOTest extends BaseDaoTests {
-    private static final Transfer TRANSFER_1 = new Transfer(3001L, 1L, 2L,new BigDecimal("10.00"),"Send","Approved");
-    private static final Transfer TRANSFER_2 = new Transfer(3002L, 2L, 1L,new BigDecimal("10.00"),"Send","Approved");
-    private static final Transfer TRANSFER_3 = new Transfer(3003L, 2L, 1L,new BigDecimal("10.00"),"Send","Rejected");
+    private static final Transfer TRANSFER_1 = new Transfer(1L, 1L, 2L,new BigDecimal("10.00"),"Send","Approved");
+    private static final Transfer TRANSFER_2 = new Transfer(2L, 2L, 1L,new BigDecimal("10.00"),"Send","Approved");
+    private static final Transfer TRANSFER_3 = new Transfer(3L, 2L, 1L,new BigDecimal("10.00"),"Send","Rejected");
+    private static final Transfer TRANSFER_4 = new Transfer(4L, 3L, 1L,new BigDecimal("10.00"),"Send","Rejected");
 
 
     private TransferDAO sut;
@@ -24,22 +25,25 @@ public class JdbcTransferDAOTest extends BaseDaoTests {
     public void setup(){
         accountDao=new JdbcAccountDAO(datasource);
         sut = new JdbcTransferDAO(datasource);
-        transferTest = new Transfer(3004L, 2L, 1L,new BigDecimal("200.00"),"Send","Approved");
+        transferTest = new Transfer(5L, 2L, 1L,new BigDecimal("200.00"),"Send","Approved");
 
     }
 
     @Test
     public void getAllApprovedTransfers() {
-        List<Transfer> transfer = sut.getAllApprovedTransfers(2L);
+        List<Transfer> approvedTransfers = sut.getAllApprovedTransfers(2L);
 
-        Assert.assertEquals(2,transfer.size());
-        assertTransfersMatch(TRANSFER_1,transfer.get(0));
-        assertTransfersMatch(TRANSFER_2,transfer.get(1));
+        Assert.assertEquals(2,approvedTransfers.size());
+        assertTransfersMatch(TRANSFER_1,approvedTransfers.get(0));
+        assertTransfersMatch(TRANSFER_2,approvedTransfers.get(1));
+
+        List<Transfer> rejectedTransfers = sut.getAllApprovedTransfers(3L);
+        Assert.assertEquals(0,rejectedTransfers.size());
     }
 
     @Test
     public void getTransferById() {
-        Transfer transfer = sut.getTransferById(3001L);
+        Transfer transfer = sut.getTransferById(1L);
         Assert.assertNotNull(transfer);
         assertTransfersMatch(TRANSFER_1,transfer);
 
@@ -47,7 +51,7 @@ public class JdbcTransferDAOTest extends BaseDaoTests {
 
     @Test
     public void newTransfer() {
-        Transfer createdTransfer = sut.newTransfer(21L,20L, new BigDecimal("200.00"));
+        Transfer createdTransfer = sut.newTransfer(2L,1L, new BigDecimal("200.00"));
         Assert.assertNotNull(createdTransfer);
         long newId = createdTransfer.getTransferId();
         Assert.assertTrue(newId>0);

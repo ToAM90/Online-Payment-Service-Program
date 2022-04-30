@@ -102,6 +102,7 @@ public class App {
     }
 
     private void viewTransferHistory() {
+
         boolean running = true;
         while (running) {
             Transfer[] listOfTransfers = tenmoService.getAllTransfers();
@@ -125,22 +126,28 @@ public class App {
             if (input == 0) {
                 running = false;
             } else {
-                Transfer transfer = tenmoService.getTransferDetails(input);
-                consoleService.border();
-                System.out.println("Transfer Details");
-                consoleService.border();
-                System.out.println("ID:" + transfer.getTransferId());
-                System.out.println("From: " + tenmoService.username(transfer.getAccountFrom()));
-                System.out.println("To: " + tenmoService.username(transfer.getAccountTo()));
-                System.out.println("Type: " + transfer.getTransferTypeDesc());
-                System.out.println("Status: " + transfer.getTransferStatusDesc());
-                System.out.println("Amount: $" + transfer.getAmount());
-                consoleService.border();
+                Transfer transfer = tenmoService.getTransferById(input);
+                if (transfer.getTransferId() == 0) {
+                    System.out.println("\nInvalid Selection. Please Try Again.");
+                    consoleService.pause();
+                } else {
+                    consoleService.border();
+                    System.out.println("Transfer Details");
+                    consoleService.border();
+                    System.out.println("ID:" + transfer.getTransferId());
+                    System.out.println("From: " + tenmoService.username(transfer.getAccountFrom()));
+                    System.out.println("To: " + tenmoService.username(transfer.getAccountTo()));
+                    System.out.println("Type: " + transfer.getTransferTypeDesc());
+                    System.out.println("Status: " + transfer.getTransferStatusDesc());
+                    System.out.println("Amount: $" + transfer.getAmount());
+                    consoleService.border();
+                    consoleService.border();
 
-                consoleService.pause();
+                    consoleService.pause();
+
+                }
 
             }
-
         }
     }
 
@@ -149,34 +156,68 @@ public class App {
         while (running) {
             consoleService.border();
             System.out.println("Pending Transfers");
-            System.out.println("ID \t\tTo \tAmount");
+            System.out.println("ID \t\tTo \t\t\tAmount");
             consoleService.border();
 
-            Transfer pendingTransfers = null;
-           // for (Transfer transfer : pendingTransfers) {
-            // FOR EACH LOOP TO ITERATE AND PRINT OUT PENDING TRANSFERS
-           // }
+            Transfer[] pendingTransfers = tenmoService.getAllPendingTransfers();
+            for (Transfer transfer : pendingTransfers) {
+                String usernameTo = tenmoService.username(transfer.getAccountTo());
+                System.out.println(transfer.getTransferId() + "\t" + usernameTo + "\t" + transfer.getAmount());
+
+            }
             consoleService.border();
 
-            int input = consoleService.promptForInt("Please enter transfer ID to approve/reject (0 to cancel): ");
-
+            long input = consoleService.promptForInt("\nPlease enter transfer ID to approve/reject (0 to cancel): ");
             if (input == 0) {
                 running = false;
             } else {
-                viewPendingOptions();
+                Transfer transfer = tenmoService.getTransferById(input);
+                if (transfer.getTransferId() == 0) {
+                    System.out.println("\nInvalid Selection. Please Try Again.");
+                    consoleService.pause();
+                } else {
+                    viewPendingOptions(input);
+                }
             }
         }
     }
 
-    private void viewPendingOptions() {
+    private void viewPendingOptions(long id) {
+        Transfer transfer = tenmoService.getTransferById(id);
+        BigDecimal amount = transfer.getAmount();
+        long accountToId = transfer.getAccountTo();
+        long userToId = tenmoService.getUserIdByAccountId(accountToId);
+        System.out.println();
+        consoleService.border();
+        consoleService.border();
+        System.out.println("ID:" + transfer.getTransferId());
+        System.out.println("From: " + tenmoService.username(transfer.getAccountFrom()));
+        System.out.println("To: " + tenmoService.username(transfer.getAccountTo()));
+        System.out.println("Type: " + transfer.getTransferTypeDesc());
+        System.out.println("Status: " + transfer.getTransferStatusDesc());
+        System.out.println("Amount: $" + transfer.getAmount());
+        consoleService.border();
+        consoleService.border();
         boolean running = true;
         while (running) {
             consoleService.printPendingMenu();
             int input = consoleService.promptForInt("Please choose an option: ");
-            if (input == 0) {
+            if (input == 1) {
+                if (tenmoService.acceptRequest(id, userToId, amount)) {
+                    System.out.println("Request Accepted.");
+                    running = false;
+                } else {
+                    System.out.println("Request Denied. Insufficient Funds.");
+                    running = false;
+                }
+            }
+            if (input == 2) {
+                if (tenmoService.rejectRequest(id, userToId, amount)) {
+                    System.out.println("Request Denied.");
+                    running = false;
+                }
+            } else if (input == 0) {
                 running = false;
-            } else {
-                // APPROVE OR REJECT TRANSFER METHOD
             }
         }
     }
@@ -197,8 +238,13 @@ public class App {
             int id = consoleService.promptForInt("Enter the ID of user you are sending to (0 to cancel): ");
             if (id == 0) {
                 running = false;
+            }
+            else if (tenmoService.getAccountById(id) == null) {
+                System.out.println("\nInvalid Selection. Please try again.");
+                consoleService.pause();
+
             } else {
-                BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
+                BigDecimal amount = consoleService.promptForBigDecimal("Enter amount in decimal: ");
                 transfer = tenmoService.makeTransfer(id, amount);
                 System.out.println(transfer);
                 running = false;
@@ -221,10 +267,14 @@ public class App {
             int id = consoleService.promptForInt("Enter the ID of user you are requesting from (0 to cancel): ");
             if (id == 0) {
                 running = false;
+            }
+            else if (tenmoService.getAccountById(id) == null) {
+                System.out.println("\nInvalid Selection. Please try again.");
+                consoleService.pause();
             } else {
-                BigDecimal amount = consoleService.promptForBigDecimal("Enter amount: ");
-                //  PENDING METHOD
-                //  System.out.println(transfer);
+                BigDecimal amount = consoleService.promptForBigDecimal("Enter amount in decimal: ");
+                transfer = tenmoService.makeRequest(id, amount);
+                System.out.println(transfer);
                 running = false;
             }
         }

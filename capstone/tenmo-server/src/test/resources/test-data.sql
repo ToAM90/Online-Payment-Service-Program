@@ -16,7 +16,7 @@ CREATE TABLE transfer_status (
 
 CREATE SEQUENCE seq_user_id
   INCREMENT BY 1
-  START WITH 1001
+  START WITH 1
   NO MAXVALUE;
 
 CREATE TABLE tenmo_user (
@@ -28,7 +28,7 @@ CREATE TABLE tenmo_user (
 
 CREATE SEQUENCE seq_account_id
   INCREMENT BY 1
-  START WITH 2001
+  START WITH 1
   NO MAXVALUE;
 
 CREATE TABLE account (
@@ -40,7 +40,7 @@ CREATE TABLE account (
 
 CREATE SEQUENCE seq_transfer_id
   INCREMENT BY 1
-  START WITH 3001
+  START WITH 1
   NO MAXVALUE;
 
 CREATE TABLE transfer (
@@ -64,18 +64,21 @@ INSERT INTO transfer_status (transfer_status_desc) VALUES ('Rejected');
 INSERT INTO transfer_type (transfer_type_desc) VALUES ('Request');
 INSERT INTO transfer_type (transfer_type_desc) VALUES ('Send');
 
-INSERT INTO tenmo_user(user_id,username,password_hash)
-VALUES (20,'Anne','Pass'),
-        (21,'Roland','Pass');
+INSERT INTO tenmo_user(username,password_hash)
+VALUES ('Anne','Pass'),       -- user_id will be 1 due to serial
+        ('Roland','Pass'),    -- user_id will be 2 due to serial
+        ('Andy', 'Pass');     -- user_id will be 3 due to serial
 
-INSERT INTO account(account_id,user_id,balance)
-VALUES (1,20,1000),
-        (2,21,1000);
+INSERT INTO account(user_id,balance)
+VALUES  (1,1000),       -- account_id will be 1 due to serial
+        (2,1000),       -- account_id will be 2 due to serial
+        (3,1000);       -- account_id will be 3 due to serial
 
 INSERT INTO transfer(account_from,account_to,amount,transfer_status_id,transfer_type_id)
-VALUES (1,2,10,2,2),
-        (2,1,10,2,2),
-        (2,1,10,3,2);
+VALUES  (1,2,10,2,2),   -- transfer_id will be 1 due to serial
+        (2,1,10,2,2),   -- transfer_id will be 2 due to serial
+        (2,1,10,3,2),   -- transfer_id will be 3 due to serial
+        (3,1,10,3,2);    -- transfer_id will be 4 due to serial
 
 
 

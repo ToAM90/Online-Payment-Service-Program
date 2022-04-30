@@ -11,8 +11,9 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class JdbcUserDaoTest extends BaseDaoTests{
-    public static final User USER_1 = new User(20L,"Anne","Pass","ROLE_USER");
-    public static final User USER_2 = new User(21L,"Roland","Pass","ROLE_USER");
+    public static final User USER_1 = new User(1L,"Anne","Pass","ROLE_USER");
+    public static final User USER_2 = new User(2L,"Roland","Pass","ROLE_USER");
+    public static final User USER_3 = new User(3L,"Andy","Pass","ROLE_USER");
 
     private JdbcUserDao sut;
 
@@ -21,7 +22,7 @@ public class JdbcUserDaoTest extends BaseDaoTests{
     @Before
     public void setup(){
         sut = new JdbcUserDao(datasource);
-        userTest = new User(22L,"Robot","Pass","Admin");
+        userTest = new User(3L,"Robot","Pass","Admin");
     }
 
     @Test
@@ -43,10 +44,11 @@ public class JdbcUserDaoTest extends BaseDaoTests{
 
     @Test
     public void findAll() {
-        List<User> listUsers = sut.findAll(21);
+        List<User> listUsers = sut.findAll(2);
 
-        Assert.assertEquals(1,listUsers.size());
+        Assert.assertEquals(2,listUsers.size());
         assertUserMatch(USER_1,listUsers.get(0));
+        assertUserMatch(USER_3, listUsers.get(1));
 
 
     }
