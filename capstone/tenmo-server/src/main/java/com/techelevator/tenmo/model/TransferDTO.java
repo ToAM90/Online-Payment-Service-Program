@@ -1,12 +1,12 @@
 package com.techelevator.tenmo.model;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class TransferDTO {
 
 
+    @Positive(message = "There should exist a user.")
     private long userId;
     @Positive(message = "Amount should be greater than zero.")
     private BigDecimal amount;
